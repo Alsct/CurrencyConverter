@@ -10,17 +10,19 @@ import com.mashape.unirest.http.Unirest;
 public class converter {
     public static void main( String[] args ) throws Exception {
 
-        String yourCurrency ="";
-        String currencyYouWant ="";
+        String yourCurrency;
+        String currencyYouWant;
         String YorNoCode = inputString("You need the currency codes to be able to convert, do you want to get the currency codes? \n"  +"Say y or n.");
         if (YorNoCode.equals("y")){
+
+            System.out.println("Enter the first countries name you want to convert");
             yourCurrency = getCode();
-            currencyYouWant=getCode();
+            System.out.println("Enter the countries name you want to get the new converted amount");            currencyYouWant=getCode();
             converting(yourCurrency, currencyYouWant);
         }
         else{
-            yourCurrency = inputString("What currency do you have that you want to convert?");
-            currencyYouWant = inputString("What currency do you want to convert to?");
+            yourCurrency = askingForInitial();
+            currencyYouWant = askingForNew();
             converting(yourCurrency, currencyYouWant);
         }
 
@@ -54,15 +56,24 @@ public class converter {
         System.out.println("You converted "+ old_amount +" "+  old+ " to " + New +" which converts to "+ new_amount );
     }
 
-    public static String getCode() throws Exception {
-        String countryName =inputString("Enter the country name");
-        String url = "https://restcountries.com/v2/name/" + countryName;
+    public static String askingForInitial(){
+        return inputString("What currency do you have that you want to convert?");
+    }
 
+    public static String askingForNew(){
+        return inputString("What currency do you want to convert to?");
+    }
+
+    public static String getCode() throws Exception {
+
+        String countryName = inputString("Enter:");
+        String url = "https://restcountries.com/v2/name/" + countryName;
         HttpResponse<String> response = Unirest.get(url).asString();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(response.getBody());
         String currencyCode = jsonNode.get(0).get("currencies").get(0).get("code").asText();
         System.out.println(currencyCode);
+        System.out.println();
         return currencyCode;
     }
 
